@@ -1,3 +1,19 @@
 # File Processor (DSP Test)
 
-WIP
+## Steps To Take Before Running The App
+
+1. Visit [this link](https://developers.google.com/drive/api/quickstart/java), then follow the guides to enable API and create Credentials
+2. Once you have finished download the credentials, store it inside `src/main/resources/credentials.json`
+3. Prepare the path to images intended to upload for the API request
+
+## How to Build The Program
+
+- Open a terminal
+- Change the working directory into the current project directory
+- Execute `mvn clean install` in your terminal
+
+## How to Run The Program
+
+- Open a terminal
+- Change the working directory into the current project directory
+- Execute `mvn spring-boot:run` in your terminal

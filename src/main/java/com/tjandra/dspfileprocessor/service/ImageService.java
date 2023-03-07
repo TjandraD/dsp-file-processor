@@ -19,10 +19,7 @@ import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
@@ -91,9 +88,21 @@ public class ImageService {
             try {
                 String result = tesseract.doOCR(imageFile);
                 log.info("OCR result for file {}: {}", imageFile.getName(), result);
+                writeOutputFiles(imageFile.getName(), result);
             } catch (TesseractException e) {
                 log.error("Error occurred when trying to read text", e);
             }
+        }
+    }
+
+    public void writeOutputFiles(String fileName, String output) {
+        try {
+            String filePath = "src/main/resources/output/";
+            FileWriter fileWriter = new FileWriter(filePath + fileName + ".txt");
+            fileWriter.write(output);
+            fileWriter.close();
+        } catch (IOException e) {
+            log.error("Error occurred when trying to write output", e);
         }
     }
 

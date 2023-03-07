@@ -15,6 +15,8 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.tess4j.Tesseract;
+import net.sourceforge.tess4j.TesseractException;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -62,9 +64,9 @@ public class ImageService {
                 .build();
     }
 
-    public void uploadFiles(java.io.File folder) {
+    public void uploadFiles(java.io.File[] fileList) {
         try {
-            for (final java.io.File fileEntry : Objects.requireNonNull(folder.listFiles())) {
+            for (final java.io.File fileEntry : fileList) {
                 File fileMetadata = new File();
                 fileMetadata.setName(fileEntry.getName());
                 FileContent mediaContent = new FileContent("image/jpeg", fileEntry);
@@ -79,11 +81,29 @@ public class ImageService {
         }
     }
 
+    public void extractText(java.io.File[] fileList) {
+        for (java.io.File imageFile : fileList) {
+            Tesseract tesseract = new Tesseract();
+            tesseract.setDatapath("src/main/resources/tessdata");
+            tesseract.setLanguage("eng+chi_tra");
+            tesseract.setPageSegMode(1);
+            tesseract.setOcrEngineMode(1);
+            try {
+                String result = tesseract.doOCR(imageFile);
+                log.info("OCR result for file {}: {}", imageFile.getName(), result);
+            } catch (TesseractException e) {
+                log.error("Error occurred when trying to read text", e);
+            }
+        }
+    }
+
     public void processImages(String folderPath) {
         try {
             final java.io.File folder = new java.io.File(folderPath);
+            final java.io.File[] fileList = Objects.requireNonNull(folder.listFiles());
 
-            uploadFiles(folder);
+            uploadFiles(fileList);
+            extractText(fileList);
         } catch (Exception e) {
             log.error("Exception occurred", e);
         }

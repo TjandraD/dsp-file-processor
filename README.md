@@ -19,6 +19,11 @@
 - Open a terminal
 - Change the working directory into the current project directory
 - Execute `mvn spring-boot:run` in your terminal
+- Import `DSP Test.postman_collection.json` to Postman and execute the request
+- Or if you don't have Postman installed, execute it with this command (change the `{{folder_path}}` first)
+```shell
+curl -X POST localhost:8080/api/v1/process-images/ -H "Content-Type: application/json" -d '{"folder_path": "{{folder_path}}"}'
+```
 
 ## File Outputs
 

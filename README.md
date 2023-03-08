@@ -22,10 +22,6 @@
 
 ## File Outputs
 
-![ImageWithWords1](https://user-images.githubusercontent.com/46013258/223324380-4a534a1c-8b5b-47d7-b11d-9eca6e66870f.png)
+![Chinese Output](https://user-images.githubusercontent.com/46013258/223734193-52fd6708-2af1-4c79-b5d3-8b00f993cca8.png)
 
-![ImageWithWords2](https://user-images.githubusercontent.com/46013258/223324523-f0a6447b-ed44-4e8b-8d2f-3fd8b2a4547b.png)
-
-![ImageWithWords3](https://user-images.githubusercontent.com/46013258/223324624-d94e719c-d5b9-40b0-86ba-13648863887a.png)
-
-![ImageWithWords4](https://user-images.githubusercontent.com/46013258/223324695-4523ddda-6a7f-4042-9f11-a8c7be29dfd4.png)
+![English Output](https://user-images.githubusercontent.com/46013258/223734382-62977c0a-3397-4305-8878-922994ddbeb1.png)

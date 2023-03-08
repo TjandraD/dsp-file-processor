@@ -1,5 +1,8 @@
 package com.tjandra.dspfileprocessor.service;
 
+import com.github.pemistahl.lingua.api.Language;
+import com.github.pemistahl.lingua.api.LanguageDetector;
+import com.github.pemistahl.lingua.api.LanguageDetectorBuilder;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -79,6 +83,9 @@ public class ImageService {
     }
 
     public void extractText(java.io.File[] fileList) {
+        List<String> englishWords = new ArrayList<>();
+        List<String> chineseWords = new ArrayList<>();
+
         for (java.io.File imageFile : fileList) {
             Tesseract tesseract = new Tesseract();
             tesseract.setDatapath("src/main/resources/tessdata");
@@ -87,23 +94,50 @@ public class ImageService {
             tesseract.setOcrEngineMode(1);
             try {
                 String result = tesseract.doOCR(imageFile);
-                log.info("OCR result for file {}: {}", imageFile.getName(), result);
-                writeOutputFiles(imageFile.getName(), result);
+                result = result.trim();
+                result = result.replaceAll("\\s+", " ");
+                result = result.replaceAll("\n", "");
+
+                for (String word : result.split(" ")) {
+                    if (detectLanguage(word).equals(Language.ENGLISH)) {
+                        englishWords.add(word);
+                    } else if (detectLanguage(word).equals(Language.CHINESE)) {
+                        chineseWords.add(word);
+                    }
+                }
+
+                writeOutputFiles("English Output", englishWords, true);
+                writeOutputFiles("Chinese Output", chineseWords, false);
             } catch (TesseractException e) {
                 log.error("Error occurred when trying to read text", e);
             }
         }
     }
 
-    public void writeOutputFiles(String fileName, String output) {
+    public void writeOutputFiles(String fileName, List<String> words, boolean isEnglish) {
         try {
             String filePath = "src/main/resources/output/";
-            FileWriter fileWriter = new FileWriter(filePath + fileName + ".txt");
-            fileWriter.write(output);
+            FileWriter fileWriter = new FileWriter(filePath + fileName + ".md");
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (String word : words) {
+                if (isEnglish && word.toLowerCase().contains("o")) {
+                    stringBuilder.append("<span style=\"color:blue\">").append(word).append("</span> ");
+                } else {
+                    stringBuilder.append(word).append(" ");
+                }
+            }
+
+            fileWriter.write(stringBuilder.toString());
             fileWriter.close();
         } catch (IOException e) {
             log.error("Error occurred when trying to write output", e);
         }
+    }
+
+    public Language detectLanguage(String word) {
+        final LanguageDetector detector = LanguageDetectorBuilder.fromLanguages(Language.ENGLISH, Language.CHINESE).build();
+        return detector.detectLanguageOf(word);
     }
 
     public void processImages(String folderPath) {
